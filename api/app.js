@@ -1,3 +1,9 @@
+/**
+ * @file app.js
+ * @description Point d'entrée de l'API REST Asim'UT
+ * @author Ton nom
+ */
+
 const express = require('express');
 require('dotenv').config();
 
@@ -23,12 +29,20 @@ app.use('/professeurs', professeurRoutes);
 app.use('/eleves/:id/moyennes', moyenneRoutes);
 app.use('/referents', referentRoutes);
 
-// Route de test
+/**
+ * @route GET /
+ * @description Route de test pour vérifier que l'API est opérationnelle
+ * @returns {object} Message de confirmation
+ */
 app.get('/', (req, res) => {
     res.json({ message: "API Asim'UT opérationnelle 🚀" });
 });
 
 const PORT = process.env.PORT || 3000;
+
+/**
+ * @description Démarrage du serveur sur le port défini dans .env ou 3000 par défaut
+ */
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
