@@ -11,6 +11,7 @@ const classeRoutes = require('./routes/classeRoutes');
 const parentRoutes = require('./routes/parentRoutes');
 const stageRoutes = require('./routes/stageRoutes');
 const professeurRoutes = require('./routes/professeurRoutes');
+const moyenneRoutes = require('./routes/moyenneRoutes');
 
 // Utilisation des routes
 app.use('/classes', classeRoutes);
@@ -18,6 +19,7 @@ app.use('/eleves', eleveRoutes);
 app.use('/parents', parentRoutes);
 app.use('/stages', stageRoutes);
 app.use('/professeurs', professeurRoutes);
+app.use('/eleves/:id/moyennes', moyenneRoutes);
 
 // Route de test
 app.get('/', (req, res) => {
