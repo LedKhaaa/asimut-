@@ -7,8 +7,10 @@ app.use(express.json());
 
 // Import des routes
 const eleveRoutes = require('./routes/eleveRoutes');
+const classeRoutes = require('./routes/classeRoutes');
 
 // Utilisation des routes
+app.use('/classes', classeRoutes);
 app.use('/eleves', eleveRoutes);
 
 // Route de test
