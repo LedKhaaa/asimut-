@@ -11,7 +11,11 @@ const getAllClasses = async (req, res) => {
 
 const getClasseById = async (req, res) => {
     try {
-        const classe = await Classe.getById(req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
+        const classe = await Classe.getById(id);
         if (!classe) {
             return res.status(404).json({ message: 'Classe non trouvée' });
         }
@@ -23,7 +27,11 @@ const getClasseById = async (req, res) => {
 
 const getElevesParClasse = async (req, res) => {
     try {
-        const eleves = await Classe.getEleves(req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
+        const eleves = await Classe.getEleves(id);
         res.json(eleves);
     } catch (error) {
         res.status(500).json({ message: 'Erreur serveur', error });
@@ -33,6 +41,18 @@ const getElevesParClasse = async (req, res) => {
 const createClasse = async (req, res) => {
     try {
         const { niveau, lettre, annee_scolaire } = req.body;
+        if (!niveau || !lettre || !annee_scolaire) {
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires' });
+        }
+        if (!Number.isInteger(niveau) || ![3, 4, 5, 6].includes(niveau)) {
+            return res.status(400).json({ message: 'Niveau invalide (3, 4, 5 ou 6)' });
+        }
+        if (typeof lettre !== 'string' || lettre.length > 2) {
+            return res.status(400).json({ message: 'Lettre invalide (max 2 caractères)' });
+        }
+        if (typeof annee_scolaire !== 'string' || !/^\d{4}-\d{4}$/.test(annee_scolaire)) {
+            return res.status(400).json({ message: 'Année scolaire invalide (format: 2024-2025)' });
+        }
         const id = await Classe.create(niveau, lettre, annee_scolaire);
         res.status(201).json({ message: 'Classe créée', id });
     } catch (error) {
@@ -42,8 +62,24 @@ const createClasse = async (req, res) => {
 
 const updateClasse = async (req, res) => {
     try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
         const { niveau, lettre, annee_scolaire } = req.body;
-        await Classe.update(req.params.id, niveau, lettre, annee_scolaire);
+        if (!niveau || !lettre || !annee_scolaire) {
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires' });
+        }
+        if (!Number.isInteger(niveau) || ![3, 4, 5, 6].includes(niveau)) {
+            return res.status(400).json({ message: 'Niveau invalide (3, 4, 5 ou 6)' });
+        }
+        if (typeof lettre !== 'string' || lettre.length > 2) {
+            return res.status(400).json({ message: 'Lettre invalide (max 2 caractères)' });
+        }
+        if (typeof annee_scolaire !== 'string' || !/^\d{4}-\d{4}$/.test(annee_scolaire)) {
+            return res.status(400).json({ message: 'Année scolaire invalide (format: 2024-2025)' });
+        }
+        await Classe.update(id, niveau, lettre, annee_scolaire);
         res.json({ message: 'Classe modifiée' });
     } catch (error) {
         res.status(500).json({ message: 'Erreur serveur', error });
@@ -52,7 +88,11 @@ const updateClasse = async (req, res) => {
 
 const deleteClasse = async (req, res) => {
     try {
-        await Classe.remove(req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
+        await Classe.remove(id);
         res.json({ message: 'Classe supprimée' });
     } catch (error) {
         res.status(500).json({ message: 'Erreur serveur', error });

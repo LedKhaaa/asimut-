@@ -9,11 +9,13 @@ app.use(express.json());
 const eleveRoutes = require('./routes/eleveRoutes');
 const classeRoutes = require('./routes/classeRoutes');
 const parentRoutes = require('./routes/parentRoutes');
+const stageRoutes = require('./routes/stageRoutes');
 
 // Utilisation des routes
 app.use('/classes', classeRoutes);
 app.use('/eleves', eleveRoutes);
 app.use('/parents', parentRoutes);
+app.use('/stages', stageRoutes);
 
 // Route de test
 app.get('/', (req, res) => {

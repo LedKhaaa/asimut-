@@ -1,6 +1,5 @@
 const Eleve = require('../models/Eleve');
 
-// GET /eleves — tous les élèves
 const getAllEleves = async (req, res) => {
     try {
         const eleves = await Eleve.getAll();
@@ -10,10 +9,13 @@ const getAllEleves = async (req, res) => {
     }
 };
 
-// GET /eleves/:id — un seul élève
 const getEleveById = async (req, res) => {
     try {
-        const eleve = await Eleve.getById(req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
+        const eleve = await Eleve.getById(id);
         if (!eleve) {
             return res.status(404).json({ message: 'Élève non trouvé' });
         }
@@ -23,10 +25,24 @@ const getEleveById = async (req, res) => {
     }
 };
 
-// POST /eleves — créer un élève
 const createEleve = async (req, res) => {
     try {
         const { nom, prenom, identifiant, id_classe } = req.body;
+        if (!nom || !prenom || !identifiant || !id_classe) {
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires' });
+        }
+        if (typeof nom !== 'string' || nom.length > 100) {
+            return res.status(400).json({ message: 'Nom invalide (max 100 caractères)' });
+        }
+        if (typeof prenom !== 'string' || prenom.length > 100) {
+            return res.status(400).json({ message: 'Prénom invalide (max 100 caractères)' });
+        }
+        if (typeof identifiant !== 'string' || identifiant.length > 50) {
+            return res.status(400).json({ message: 'Identifiant invalide (max 50 caractères)' });
+        }
+        if (!Number.isInteger(id_classe)) {
+            return res.status(400).json({ message: 'id_classe doit être un entier' });
+        }
         const id = await Eleve.create(nom, prenom, identifiant, id_classe);
         res.status(201).json({ message: 'Élève créé', id });
     } catch (error) {
@@ -34,21 +50,42 @@ const createEleve = async (req, res) => {
     }
 };
 
-// PUT /eleves/:id — modifier un élève
 const updateEleve = async (req, res) => {
     try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
         const { nom, prenom, identifiant, id_classe } = req.body;
-        await Eleve.update(req.params.id, nom, prenom, identifiant, id_classe);
+        if (!nom || !prenom || !identifiant || !id_classe) {
+            return res.status(400).json({ message: 'Tous les champs sont obligatoires' });
+        }
+        if (typeof nom !== 'string' || nom.length > 100) {
+            return res.status(400).json({ message: 'Nom invalide (max 100 caractères)' });
+        }
+        if (typeof prenom !== 'string' || prenom.length > 100) {
+            return res.status(400).json({ message: 'Prénom invalide (max 100 caractères)' });
+        }
+        if (typeof identifiant !== 'string' || identifiant.length > 50) {
+            return res.status(400).json({ message: 'Identifiant invalide (max 50 caractères)' });
+        }
+        if (!Number.isInteger(id_classe)) {
+            return res.status(400).json({ message: 'id_classe doit être un entier' });
+        }
+        await Eleve.update(id, nom, prenom, identifiant, id_classe);
         res.json({ message: 'Élève modifié' });
     } catch (error) {
         res.status(500).json({ message: 'Erreur serveur', error });
     }
 };
 
-// DELETE /eleves/:id — supprimer un élève
 const deleteEleve = async (req, res) => {
     try {
-        await Eleve.remove(req.params.id);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID invalide' });
+        }
+        await Eleve.remove(id);
         res.json({ message: 'Élève supprimé' });
     } catch (error) {
         res.status(500).json({ message: 'Erreur serveur', error });
