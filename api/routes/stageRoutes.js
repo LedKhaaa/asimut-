@@ -7,5 +7,6 @@ router.get('/:id', stageController.getStageById);
 router.post('/', stageController.createStage);
 router.put('/:id', stageController.updateStage);
 router.delete('/:id', stageController.deleteStage);
+router.get('/:id/pdf', stageController.exportPDF);
 
 module.exports = router;
