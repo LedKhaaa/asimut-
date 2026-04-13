@@ -1,0 +1,54 @@
+<% title='Liste des élèves' %>
+    <p>
+        <%= search %>
+    </p>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem;">
+        <h2>Élèves</h2>
+        <a href="/eleves/create" class="btn btn-primary">+ Nouvel élève</a>
+    </div>
+
+    <% if (typeof erreur !=='undefined' && erreur) { %>
+        <div class="erreur">
+            <%= erreur %>
+        </div>
+        <% } %>
+
+            <% if (eleves.length===0) { %>
+                <div class="card" style="text-align:center; color:#888;">Aucun élève enregistré.</div>
+                <% } else { %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Classe</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% eleves.forEach(eleve=> { %>
+                                <tr>
+                                    <td>
+                                        <%= eleve.nom %>
+                                    </td>
+                                    <td>
+                                        <%= eleve.prenom %>
+                                    </td>
+                                    <td>
+                                        <%= eleve.id_classe ?? '—' %>
+                                    </td>
+                                    <td style="display:flex; gap:0.5rem;">
+                                        <a href="/eleves/<%= eleve.id_eleve %>" class="btn btn-secondary">Voir</a>
+                                        <a href="/eleves/<%= eleve.id_eleve %>/edit"
+                                            class="btn btn-primary">Modifier</a>
+                                        <form action="/eleves/<%= eleve.id_eleve %>/delete" method="POST"
+                                            onsubmit="return confirm('Supprimer cet élève ?')">
+                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                    <% } %>

@@ -1,4 +1,6 @@
 const Eleve = require('../models/Eleve');
+const { parse } = require('csv-parse/sync');
+const fs = require('fs');
 
 const getAllEleves = async (req, res) => {
     try {
@@ -92,4 +94,51 @@ const deleteEleve = async (req, res) => {
     }
 };
 
-module.exports = { getAllEleves, getEleveById, createEleve, updateEleve, deleteEleve };
+const importCSV = async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'Aucun fichier reçu.' });
+    }
+
+    try {
+        const contenu = fs.readFileSync(req.file.path, 'utf8');
+
+        const lignes = parse(contenu, {
+            delimiter: ' ',
+            columns: true,
+            skip_empty_lines: true,
+            relax_column_count: true,
+            trim: true
+        });
+
+        let importes = 0;
+        let erreurs = [];
+
+        for (const ligne of lignes) {
+            const { nom, prenom, identifiant, niveau } = ligne;
+
+            if (!nom || !prenom || !identifiant || !niveau) {
+                erreurs.push(`Ligne ignorée : données manquantes (${JSON.stringify(ligne)})`);
+                continue;
+            }
+
+            try {
+                await Eleve.create(nom, prenom, identifiant, null);
+                importes++;
+            } catch (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    erreurs.push(`Doublon ignoré : ${identifiant}`);
+                } else {
+                    erreurs.push(`Erreur pour ${identifiant} : ${err.message}`);
+                }
+            }
+        }
+
+        fs.unlinkSync(req.file.path);
+        res.json({ importes, erreurs });
+
+    } catch (err) {
+        res.status(500).json({ error: 'Erreur lors du traitement du CSV.', detail: err.message });
+    }
+};
+
+module.exports = { getAllEleves, getEleveById, createEleve, updateEleve, deleteEleve, importCSV };

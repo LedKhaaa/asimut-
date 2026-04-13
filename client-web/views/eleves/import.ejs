@@ -1,0 +1,43 @@
+<% title='Import CSV' %>
+
+    <div style="margin-bottom:1rem;">
+        <a href="/eleves" class="btn btn-secondary">← Retour</a>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-bottom:1.2rem;">Importer des élèves via CSV</h2>
+
+        <p style="margin-bottom:1rem; color:#555; font-size:0.9rem;">
+            Format attendu : colonnes <strong>nom prenom identifiant niveau</strong>, séparées par des espaces.
+        </p>
+
+        <% if (erreur) { %>
+            <div class="erreur">
+                <%= erreur %>
+            </div>
+            <% } %>
+
+                <% if (resultat) { %>
+                    <div
+                        style="background:#e8f5e9; border-left:4px solid #2e7d32; padding:0.8rem 1rem; border-radius:4px; margin-bottom:1rem; color:#2e7d32;">
+                        ✅ <%= resultat.importes %> élève(s) importé(s).
+                            <% if (resultat.erreurs && resultat.erreurs.length> 0) { %>
+                                <ul style="margin-top:0.5rem;">
+                                    <% resultat.erreurs.forEach(e=> { %>
+                                        <li style="font-size:0.85rem;">
+                                            <%= e %>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                                <% } %>
+                    </div>
+                    <% } %>
+
+                        <form action="/eleves/import" method="POST" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="fichier">Fichier CSV</label>
+                                <input type="file" id="fichier" name="fichier" accept=".csv,.txt" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Importer</button>
+                        </form>
+    </div>

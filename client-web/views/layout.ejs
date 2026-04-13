@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asim'UT — <%= typeof title !=='undefined' ? title : 'Collège Asimov' %>
+    </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #1a1a2e;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+        }
+
+        header h1 span {
+            color: #e94560;
+        }
+
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        main {
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        h2 {
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #1a1a2e;
+        }
+
+        .btn-danger {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .erreur {
+            background: #fde8ec;
+            border-left: 4px solid #e94560;
+            padding: 0.8rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            color: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        th {
+            background: #1a1a2e;
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f9f9f9;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid #1a1a2e;
+            border-color: transparent;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div style="display:flex; align-items:center; gap:0.8rem;">
+            <img src="/logo.png" alt="Logo Asimov" style="height:40px;">
+            <h1>Asim<span>'</span>UT</h1>
+        </div>
+        <nav style="display:flex; align-items:center; gap:1rem;">
+            <a href="/eleves">Élèves</a>
+            <form action="/eleves" method="GET" style="display:flex; gap:0.4rem;">
+                <input type="text" name="search" placeholder="Rechercher un élève…"
+                    style="padding:0.35rem 0.7rem; border-radius:5px; border:none; font-size:0.85rem; width:200px;">
+                <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.8rem;">🔍</button>
+            </form>
+        </nav>
+
+        <a href="/eleves/import" class="btn btn-primary" style="font-size:0.85rem; padding:0.35rem 0.9rem;">📂 Import
+            CSV</a>
+        <a href="/eleves/stages">Stages</a>
+    </header>
+
+    <main>
+        <%- body %>
+    </main>
+
+</body>
+
+</html>

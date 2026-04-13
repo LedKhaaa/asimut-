@@ -1,0 +1,146 @@
+<% title = eleve.prenom + ' ' + eleve.nom %>
+
+<div style="margin-bottom:1rem;">
+  <a href="/eleves" class="btn btn-secondary">← Retour</a>
+</div>
+
+<div class="card">
+  <h2 style="margin-bottom:1.2rem;"><%= eleve.prenom %> <%= eleve.nom %></h2>
+  <table>
+    <tbody>
+      <tr><td><strong>ID</strong></td><td><%= eleve.id_eleve %></td></tr>
+      <tr><td><strong>Nom</strong></td><td><%= eleve.nom %></td></tr>
+      <tr><td><strong>Prénom</strong></td><td><%= eleve.prenom %></td></tr>
+      <tr><td><strong>Identifiant</strong></td><td><%= eleve.identifiant ?? '—' %></td></tr>
+      <tr><td><strong>Classe</strong></td><td><%= eleve.id_classe ?? '—' %></td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:1.2rem; display:flex; gap:0.8rem;">
+    <a href="/eleves/<%= eleve.id_eleve %>/edit" class="btn btn-primary">Modifier</a>
+    <form action="/eleves/<%= eleve.id_eleve %>/delete" method="POST"
+          onsubmit="return confirm('Supprimer cet élève ?')">
+      <button type="submit" class="btn btn-danger">Supprimer</button>
+    </form>
+  </div>
+</div>
+
+<!-- Options -->
+<div class="card" style="margin-top:1.5rem;">
+  <h2 style="margin-bottom:1.2rem;">Options</h2>
+
+  <% if (options.length === 0) { %>
+    <p style="color:#888;">Aucune option assignée.</p>
+  <% } else { %>
+    <ul style="list-style:none; padding:0; margin-bottom:1rem;">
+      <% options.forEach(option => { %>
+        <li style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.5rem;">
+          <span style="background:#1a1a2e; color:white; padding:0.3rem 0.8rem; border-radius:20px; font-size:0.85rem;">
+            <%= option.libelle %>
+          </span>
+          <form action="/eleves/<%= eleve.id_eleve %>/options/<%= option.id_option %>/delete" method="POST">
+            <button type="submit" class="btn btn-danger" style="padding:0.2rem 0.6rem; font-size:0.8rem;">✕</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/eleves/<%= eleve.id_eleve %>/options" method="POST" style="display:flex; gap:0.5rem;">
+    <select name="id_option" style="padding:0.4rem 0.6rem; border-radius:5px; border:1px solid #ccc;">
+      <% toutesOptions.forEach(opt => { %>
+        <% const dejaPrise = options.some(o => o.id_option === opt.id_option); %>
+        <% if (!dejaPrise) { %>
+          <option value="<%= opt.id_option %>"><%= opt.libelle %></option>
+        <% } %>
+      <% }) %>
+    </select>
+    <button type="submit" class="btn btn-primary">+ Ajouter</button>
+  </form>
+</div>
+
+<!-- Projets -->
+<div class="card" style="margin-top:1.5rem;">
+  <h2 style="margin-bottom:1.2rem;">Projets</h2>
+
+  <% if (projets.length === 0) { %>
+    <p style="color:#888;">Aucun projet assigné.</p>
+  <% } else { %>
+    <ul style="list-style:none; padding:0; margin-bottom:1rem;">
+      <% projets.forEach(projet => { %>
+        <li style="display:flex; align-items:center; gap:0.8rem; margin-bottom:0.5rem;">
+          <span style="background:#1a1a2e; color:white; padding:0.3rem 0.8rem; border-radius:20px; font-size:0.85rem;">
+            <%= projet.nom %>
+            <% if (projet.est_responsable) { %> ⭐<% } %>
+            <% if (!projet.valide) { %> <em style="opacity:0.6;">(en attente)</em><% } %>
+          </span>
+          <form action="/eleves/<%= eleve.id_eleve %>/projets/<%= projet.id_projet %>/delete" method="POST">
+            <button type="submit" class="btn btn-danger" style="padding:0.2rem 0.6rem; font-size:0.8rem;">✕</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/eleves/<%= eleve.id_eleve %>/projets" method="POST" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+    <select name="id_projet" style="padding:0.4rem 0.6rem; border-radius:5px; border:1px solid #ccc;">
+      <% tousLesProjets.forEach(p => { %>
+        <% const dejaDedans = projets.some(pr => pr.id_projet === p.id_projet); %>
+        <% if (!dejaDedans) { %>
+          <option value="<%= p.id_projet %>"><%= p.nom %></option>
+        <% } %>
+      <% }) %>
+    </select>
+    <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.9rem;">
+      <input type="checkbox" name="est_responsable" value="1"> Responsable
+    </label>
+    <button type="submit" class="btn btn-primary">+ Ajouter</button>
+  </form>
+</div>
+
+<!-- Graphique moyennes -->
+<% if (moyennes && moyennes.length > 0) { %>
+<div class="card" style="margin-top:1.5rem;">
+  <h2 style="margin-bottom:1.2rem;">Évolution des moyennes</h2>
+  <canvas id="graphiqueMoyennes" height="100"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const moyennes = <%- JSON.stringify(moyennes) %>;
+
+  moyennes.sort((a, b) => {
+    if (a.annee_scolaire !== b.annee_scolaire) return a.annee_scolaire.localeCompare(b.annee_scolaire);
+    return a.semestre - b.semestre;
+  });
+
+  const labels  = moyennes.map(m => `${m.annee_scolaire} — S${m.semestre}`);
+  const valeurs = moyennes.map(m => parseFloat(m.valeur));
+
+  new Chart(document.getElementById('graphiqueMoyennes'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Moyenne générale',
+        data: valeurs,
+        borderColor: '#1a1a2e',
+        backgroundColor: 'rgba(26,26,46,0.1)',
+        borderWidth: 2,
+        pointBackgroundColor: '#e94560',
+        pointRadius: 5,
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      scales: {
+        y: { min: 0, max: 20, ticks: { stepSize: 2 } }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+</script>
+<% } %>

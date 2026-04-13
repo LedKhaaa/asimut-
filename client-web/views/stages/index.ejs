@@ -1,0 +1,47 @@
+<% title = 'Suivi des stages' %>
+
+<h2 style="margin-bottom:1.2rem;">Suivi des recherches de stage</h2>
+
+<% if (typeof erreur !== 'undefined' && erreur) { %>
+  <div class="erreur"><%= erreur %></div>
+<% } %>
+
+<% if (stages.length === 0) { %>
+  <div class="card" style="text-align:center; color:#888;">Aucun stage enregistré.</div>
+<% } else { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Élève</th>
+        <th>Entreprise</th>
+        <th>Contact</th>
+        <th>Lettres envoyées</th>
+        <th>Lettres reçues</th>
+        <th>Résultat</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% stages.forEach(stage => { %>
+        <tr style="<%= stage.alerte ? 'background:#fde8ec;' : '' %>">
+          <td>
+            <%= stage.prenom %> <%= stage.nom %>
+            <% if (stage.alerte) { %>
+              <span style="color:#e94560; font-weight:bold;" title="Plus de 15 lettres envoyées">⚠️</span>
+            <% } %>
+          </td>
+          <td><%= stage.entreprise %></td>
+          <td><%= stage.contact_nom ?? '—' %></td>
+          <td style="<%= stage.alerte ? 'color:#e94560; font-weight:bold;' : '' %>">
+            <%= stage.nb_lettres_envoyees %>
+          </td>
+          <td><%= stage.nb_lettres_recues %></td>
+          <td><%= stage.resultat ?? '—' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div style="margin-top:1rem; font-size:0.85rem; color:#888;">
+    ⚠️ = plus de 15 lettres envoyées sans convention signée — référent à alerter
+  </div>
+<% } %>
