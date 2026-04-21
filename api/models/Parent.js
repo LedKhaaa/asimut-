@@ -78,5 +78,17 @@ const update = async (id, nom, prenom, email, id_eleve) => {
 const remove = async (id) => {
     await db.query('DELETE FROM PARENT WHERE id_parent = ?', [id]);
 };
+const getByEleve = async (id_eleve) => {
+    const [rows] = await db.query('SELECT * FROM PARENT WHERE id_eleve = ?', [id_eleve]);
+    return rows;
+};
 
-module.exports = { getAll, getById, getEleves, create, update, remove };
+const getAllAvecEleve = async () => {
+    const [rows] = await db.query(`
+        SELECT p.*, e.nom AS eleve_nom, e.prenom AS eleve_prenom
+        FROM PARENT p
+        JOIN ELEVE e ON p.id_eleve = e.id_eleve
+    `);
+    return rows;
+};
+module.exports = { getAll, getById, getEleves, create, update, remove, getByEleve, getAllAvecEleve };

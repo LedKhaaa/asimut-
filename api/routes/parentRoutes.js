@@ -8,5 +8,5 @@ router.get('/:id/eleves', parentController.getElevesParParent);
 router.post('/', parentController.createParent);
 router.put('/:id', parentController.updateParent);
 router.delete('/:id', parentController.deleteParent);
-
+router.post('/publipostage', parentController.publipostage);
 module.exports = router;

@@ -4,6 +4,7 @@ const ejsLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
 const eleveRoutes = require('./routes/eleveRoutes');
+const parentRoutes = require('./routes/parentRoutes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/eleves', eleveRoutes);
+app.use('/parents', parentRoutes);
 
 // Redirection racine → liste des élèves
 app.get('/', (req, res) => {

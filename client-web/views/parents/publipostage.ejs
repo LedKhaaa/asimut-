@@ -1,0 +1,54 @@
+<% title = 'Publipostage' %>
+
+<h2 style="margin-bottom:1.2rem;">Publipostage — Email aux parents</h2>
+
+<div class="card">
+    <form action="/parents/publipostage" method="POST">
+        <div class="form-group">
+            <label for="sujet">Sujet</label>
+            <input type="text" id="sujet" name="sujet" required placeholder="Ex: Réunion parents d'élèves">
+        </div>
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="8" required
+                style="width:100%; padding:0.5rem; border-radius:5px; border:1px solid #ccc; font-family:inherit;"
+                placeholder="Rédigez votre message ici..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">📨 Envoyer à tous les parents</button>
+    </form>
+</div>
+
+<% if (typeof resultats !== 'undefined' && resultats.length > 0) { %>
+<div class="card" style="margin-top:1.5rem;">
+    <h2 style="margin-bottom:1.2rem;">Résultats d'envoi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Parent</th>
+                <th>Élève</th>
+                <th>Email</th>
+                <th>Aperçu</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% resultats.forEach(r => { %>
+            <tr>
+                <td><%= r.parent %></td>
+                <td><%= r.eleve %></td>
+                <td><%= r.email %></td>
+                <td>
+                    <a href="<%= r.apercu %>" target="_blank" class="btn btn-secondary"
+                       style="padding:0.2rem 0.6rem; font-size:0.8rem;">
+                        👁 Voir
+                    </a>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<% } %>
+
+<% if (typeof erreur !== 'undefined' && erreur) { %>
+<div class="erreur" style="margin-top:1rem;"><%= erreur %></div>
+<% } %>

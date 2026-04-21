@@ -1,4 +1,5 @@
 const Parent = require('../models/Parent');
+const { envoyerEmail } = require('../utils/mailer');
 
 const getAllParents = async (req, res) => {
     try {
@@ -105,4 +106,48 @@ const deleteParent = async (req, res) => {
     }
 };
 
-module.exports = { getAllParents, getParentById, getElevesParParent, createParent, updateParent, deleteParent };
+const publipostage = async (req, res) => {
+    try {
+        const { sujet, message } = req.body;
+        if (!sujet || !message) {
+            return res.status(400).json({ error: 'Sujet et message obligatoires' });
+        }
+
+        const parents = await Parent.getAllAvecEleve();
+        if (parents.length === 0) {
+            return res.status(404).json({ error: 'Aucun parent trouvé' });
+        }
+
+        const resultats = [];
+
+        for (const parent of parents) {
+            const contenu = `
+                <div style="font-family:Arial,sans-serif; max-width:600px; margin:auto;">
+                    <h2 style="color:#1a1a2e;">Collège Asimov — Grenoble</h2>
+                    <p>Bonjour <strong>${parent.prenom} ${parent.nom}</strong>,</p>
+                    <p>Ce message concerne votre enfant <strong>${parent.eleve_prenom} ${parent.eleve_nom}</strong>.</p>
+                    <hr/>
+                    <p>${message.replace(/\n/g, '<br/>')}</p>
+                    <hr/>
+                    <p style="color:#888; font-size:0.85rem;">
+                        Collège Asimov — Route de Narbonne, Saint-Martin-le-Vinoux, Grenoble
+                    </p>
+                </div>
+            `;
+
+            const urlApercu = await envoyerEmail(parent.email, sujet, contenu);
+            resultats.push({
+                parent: `${parent.prenom} ${parent.nom}`,
+                eleve: `${parent.eleve_prenom} ${parent.eleve_nom}`,
+                email: parent.email,
+                apercu: urlApercu
+            });
+        }
+
+        res.json({ message: `${resultats.length} email(s) envoyé(s)`, resultats });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+module.exports = { getAllParents, getParentById, getElevesParParent, createParent, updateParent, deleteParent, publipostage };
