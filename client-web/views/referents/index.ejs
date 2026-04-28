@@ -1,0 +1,75 @@
+<% title = 'Référents' %>
+
+<h2 style="margin-bottom:1.2rem;">Vue référents</h2>
+
+<% if (typeof erreur !== 'undefined' && erreur) { %>
+  <div class="erreur"><%= erreur %></div>
+<% } %>
+
+<div class="card">
+  <div style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+    <form action="/referents" method="GET" style="display:flex; gap:0.5rem; align-items:flex-end;">
+      <div class="form-group" style="margin:0;">
+        <label for="id_professeur">Choisir un professeur référent</label>
+        <select name="id_professeur" id="id_professeur" style="min-width:220px;">
+          <option value="">-- Sélectionner --</option>
+          <% profs.forEach(p => { %>
+            <option value="<%= p.id_professeur %>"
+              <%= profSelectionne && profSelectionne.id_professeur == p.id_professeur ? 'selected' : '' %>>
+              <%= p.prenom %> <%= p.nom %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Afficher</button>
+    </form>
+
+    <form action="/referents/round-robin" method="POST">
+      <button type="submit" class="btn btn-secondary"
+        onclick="return confirm('Affecter automatiquement tous les élèves sans référent ?')">
+        🔄 Affectation automatique
+      </button>
+    </form>
+  </div>
+</div>
+
+<% if (profSelectionne) { %>
+<div class="card" style="margin-top:1.5rem;">
+  <h2 style="margin-bottom:1.2rem;">
+    Élèves de <%= profSelectionne.prenom %> <%= profSelectionne.nom %>
+  </h2>
+
+  <% if (elevesReferent.length === 0) { %>
+    <p style="color:#888;">Aucun élève assigné à ce référent.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Identifiant</th>
+          <th>Classe</th>
+          <th>Fiche</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% elevesReferent.forEach(eleve => { %>
+          <tr>
+            <td><%= eleve.nom %></td>
+            <td><%= eleve.prenom %></td>
+            <td><%= eleve.identifiant ?? '—' %></td>
+            <td><%= eleve.id_classe ?? '—' %></td>
+            <td>
+              <a href="/eleves/<%= eleve.id_eleve %>"
+                 class="btn btn-secondary"
+                 style="padding:0.2rem 0.6rem; font-size:0.8rem;">
+                👤 Voir
+              </a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<% } %>

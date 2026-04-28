@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const eleveRoutes = require('./routes/eleveRoutes');
 const parentRoutes = require('./routes/parentRoutes');
+const referentRoutes = require('./routes/referentRoutes');
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/eleves', eleveRoutes);
 app.use('/parents', parentRoutes);
-
+app.use('/referents', referentRoutes);
 // Redirection racine → liste des élèves
 app.get('/', (req, res) => {
     res.redirect('/eleves');
